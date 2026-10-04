@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&family=PT+Serif:wght@400;700&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #0e0f1a;
+  --foreground: #ece5d8;
+  --parchment: #1e2235;
+  --gold: #d3bc8e;
+  --border-light: #4a5366;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: "PT Serif", Georgia, serif;
+}
+
+body {
+  background-color: #0e0f1a;
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+}
+
+.hoyo-title {
+  font-family: "Cinzel", serif;
+}
+
+.hoyo-serif {
+  font-family: "Crimson Text", serif;
+}
+
+/* HoYoverse Parchment Utility Classes */
+@layer utilities {
+  .bg-parchment {
+    background-color: var(--parchment);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), inset 0 0 80px rgba(204, 166, 119, 0.05);
+  }
+
+  /* Creates the inner border with corner diamonds typical in Genshin UI */
+  .border-ornate {
+    border: 1px solid var(--border-light);
+    outline: 1px solid var(--border-light);
+    outline-offset: -4px;
+    position: relative;
+  }
+
+  .border-ornate::before, .border-ornate::after,
+  .border-ornate-inner::before, .border-ornate-inner::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background-color: var(--gold);
+    transform: rotate(45deg);
+  }
+  
+  .border-ornate::before { top: 1px; left: 1.5px; }
+  .border-ornate::after { top: 1px; right: 1.5px; }
+  .border-ornate-inner { position: absolute; inset: 0; pointer-events: none; }
+  .border-ornate-inner::before { bottom: 1.5px; left: 1.5px; }
+  .border-ornate-inner::after { bottom: 1.5px; right: 1.5px; }
+
+  .text-stamp {
+    color: var(--foreground);
+    text-shadow: 1px 1px 0px rgba(255,255,255,0.7);
+  }
+
+  /* Scalloped ticket edge effect for the main container */
+  .mask-ticket {
+    mask-image: radial-gradient(circle at 12px 12px, transparent 12px, black 13px);
+    mask-size: 100% 100%;
+    mask-position: -12px -12px;
+  }
+}
+
+@keyframes slideUpFade {
+  0% { opacity: 0; transform: translateY(30px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes floatSoft {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.animate-enter {
+  animation: slideUpFade 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+.animate-float-soft {
+  animation: floatSoft 5s ease-in-out infinite;
+}

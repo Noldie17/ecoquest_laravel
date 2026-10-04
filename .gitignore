@@ -1,53 +1,29 @@
-# dep
-/node_modules
-/.pnp
-.pnp.*
-.yarn/*
-!.yarn/patches
-!.yarn/plugins
-!.yarn/releases
-!.yarn/versions
-
-# test
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# prod
-/build
-
-# misc
+*.log
 .DS_Store
-*.pem
-
-# debug
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.pnpm-debug.log*
-
-# env
 .env*
-*.local
-keys.txt
-
-# local test scripts (may contain hardcoded API keys)
-test_*.mjs
-test_*.js
-
-# Google Cloud service account credentials
-.gcloud/
-
-# vercel
-.vercel
-
-# nested project copies (accidental duplicates inside root)
-/ecoquest/
-/ecoquest-1/
-ecoquest-1.code-workspace
-
-# typescript
-*.tsbuildinfo
-next-env.d.ts
+!.env.example
+.phpactor.json
+.phpunit.result.cache
+/.codex
+/.cursor/
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+/auth.json
+*.key
+*.pem
+/node_modules
+/.next
+/public/build
+/public/fonts-manifest.dev.json
+/public/hot
+/public/storage
+/storage/*.key
+/storage/pail
+/vendor
+_ide_helper.php
+Homestead.json
+Homestead.yaml
+Thumbs.db

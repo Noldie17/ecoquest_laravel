@@ -1,94 +1,70 @@
-# ♦ ECOQUEST ♦
+# EcoQuest
 
-> **Waste Detection & Upcycling RPG**  
-> Developed by **TerraByte** · Earth Day 2026  
-> *Turning today's waste into tomorrow's treasures.*
+EcoQuest is a Laravel + React/Inertia application for scanning discarded materials, earning XP, and finding upcycling ideas. The existing React interface and Tailwind styling are retained; Laravel serves the pages and handles Roboflow requests.
 
----
+## Requirements
 
-## ✦ Overview
+- PHP 8.3 or newer with SQLite, cURL, Fileinfo, and Mbstring extensions
+- Composer 2
+- Node.js 20.19+ or 22.12+, and npm
 
-**EcoQuest** is a web application designed to gamify the process of recycling and upcycling. By leveraging AI vision models, EcoQuest identifies waste items from uploaded images, categorizes them by rarity, and provides creative upcycling recipes—all while rewarding the user with experience points (XP) to ascend through environmental ranks.
+## First-time setup
 
----
+From the project directory, run:
 
-## ✦ Key Features
+```powershell
+composer install
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+php artisan key:generate
+if (!(Test-Path database/database.sqlite)) { New-Item -ItemType File -Path database/database.sqlite | Out-Null }
+php artisan migrate
+npm install
+```
 
-- **AI Vision Analysis**: Powered by **Roboflow's Florence-2** model for precise object detection and material identification.
-- **RPG Progression**: 
-    - **Rarity System**: Items classified as Common, Rare, Epic, or Legendary.
-    - **XP Rewards**: Earn XP for every scan based on item rarity.
-    - **Rank Ascension**: Climb from *Seedling* to *Gaia Legend*.
-- **Creative Upcycling**: Generates contextual "Transmutation Recipes" for your waste.
-- **OCR Integration**: Optional text extraction for product labels and packaging context.
-- **Persistent Stats**: Your rank and XP are saved locally in your browser.
+If `.env` already exists, keep it and do not overwrite it from `.env.example`.
 
----
+## Start the application
 
-## ✦ Tech Stack
+Run these in two terminals from the project directory:
 
-| Layer | Technology |
-|---|---|
-| **Framework** | Next.js 16 (App Router) |
-| **Styling** | Tailwind CSS 4 |
-| **Animations** | Framer Motion |
-| **AI Vision** | Roboflow Serverless Workflows (Florence-2) |
-| **Persistence** | Browser `localStorage` |
-| **Language** | TypeScript |
+```powershell
+php artisan serve
+```
 
----
+```powershell
+npm run dev
+```
 
-## ✦ Getting Started
+Open the URL printed by `php artisan serve` (normally http://127.0.0.1:8000). The Vite server supplies the React/Tailwind assets while developing.
 
-### Prerequisites
-- **Node.js**: v18.0.0 or higher
-- **npm**: v9.0.0 or higher
+For a production asset build, run `npm run build`. The application can then be served by Laravel using your normal PHP web server.
 
-### Installation
+## Roboflow configuration
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd ecoquest
-   ```
+Put the Roboflow settings in the project-root `.env` file:
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+```dotenv
+ROBOFLOW_API_KEY=your_private_api_key
+ROBOFLOW_API_URL=https://your-roboflow-workflow-endpoint
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_cloudinary_api_key
+CLOUDINARY_API_SECRET=your_private_cloudinary_api_secret
+```
 
-3. **Configure Environment Variables**:
-   Create a `.env.local` file in the root directory and add your Roboflow API key:
-   ```env
-   ROBOFLOW_API_KEY=your_roboflow_api_key_here
-   ```
+Copy the full HTTPS endpoint URL from your Roboflow workflow's API/deploy page. It already includes your workspace and workflow ID, so separate workspace/ID settings are unnecessary. Requests authenticate with a Bearer token; the API key stays on Laravel's server and must never be added to React code or committed.
 
-4. **Run the development server**:
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000) to view the application.
+The workflow accepts a public image URL. EcoQuest temporarily uploads each scan to Cloudinary, passes its secure image URL to Roboflow, then asks Cloudinary to delete the image after analysis. A cleanup failure is logged; uploaded Cloudinary images may remain until manually removed if deletion fails.
 
----
+The card maps the workflow's `outputs[0]` JSON fields directly: `artifact_name`, `waste_type`, `material`, `analysis`, `rarity_tier`, `rarity_stars`, `xp_points`, `recipe_title`, `recipe_steps`, and `eco_knowledge`. `safety_warning` and `local_rules_note` are also displayed when provided. `output_image` is intentionally ignored by the card. The card does not derive scan results, rarity, XP, recipes, or eco facts locally; if a required field is missing, EcoQuest reports it instead of substituting hardcoded content.
 
-## ✦ Testing & Scripts
+Create a free Cloudinary account and copy the cloud name, API key, and API secret from its dashboard into the same root `.env` file. Never expose the API secret in React code or commit it. Optional label OCR uses `IMAGGA_API_KEY` and `IMAGGA_API_SECRET` there too.
 
-- **Development**: `npm run dev` - Starts the dev server with hot-reloading.
-- **Linting**: `npm run lint` - Runs ESLint to check for code quality and patterns.
-- **Building**: `npm run build` - Creates a production-ready build.
-- **Production**: `npm run start` - Starts the production server after building.
+## Existing features
 
----
+- Home, scanner, history, and about pages
+- Image upload and camera capture
+- Roboflow workflow analysis and optional Imagga OCR
+- Rarity, XP, ranks, upcycling recipes, and eco facts
+- Local browser storage for XP and scan history
 
-## ✦ Vision Integration Details
-
-EcoQuest uses the **Roboflow Workflows** API. When an image is uploaded:
-1. The image is processed by the **Florence-2** model.
-2. A material-aware prompt guides the AI to determine the item's properties.
-3. The result is parsed for keywords to determine rarity and generate eco-facts.
-4. If **OCR** is enabled, the system extracts text from the image to provide additional context for the analysis.
-
----
-
-## ✦ Developed by TerraByte
-♦ **ECOQUEST • EARTH DAY 2026** ♦
+Scan history and XP remain in the browser's `localStorage`, so they are local to each browser/device. No account or database-backed user profile is required.
